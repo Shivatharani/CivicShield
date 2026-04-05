@@ -1,0 +1,170 @@
+[
+  {
+    "type": "REJECTED",
+    "citizenHash": "eea8a6b709c8aeab4bed8976bf9a684289b29922f5e93472a1c316eab4f9961d",
+    "gate": 1,
+    "reason": "Scheme_Eligibility = Pension",
+    "extra": "",
+    "timestamp": "2026-04-05T12:52:06.772Z"
+  },
+  {
+    "type": "REJECTED",
+    "citizenHash": "eea8a6b709c8aeab4bed8976bf9a684289b29922f5e93472a1c316eab4f9961d",
+    "gate": 1,
+    "reason": "Scheme_Amount = 2000",
+    "extra": "",
+    "timestamp": "2026-04-05T12:52:16.793Z"
+  },
+  {
+    "type": "REJECTED",
+    "citizenHash": "e30cd4ec1ecf6b93477619fed4455a6047f6d523100dde2a2375e4ddbc344ff7",
+    "gate": 1,
+    "reason": "Citizen_ID = NOT_FOUND",
+    "extra": "",
+    "timestamp": "2026-04-05T12:52:24.001Z"
+  },
+  {
+    "type": "REJECTED",
+    "citizenHash": "e30cd4ec1ecf6b93477619fed4455a6047f6d523100dde2a2375e4ddbc344ff7",
+    "gate": 1,
+    "reason": "Citizen_ID = NOT_FOUND",
+    "extra": "",
+    "timestamp": "2026-04-05T12:52:26.475Z"
+  },
+  {
+    "type": "REJECTED",
+    "citizenHash": "eea8a6b709c8aeab4bed8976bf9a684289b29922f5e93472a1c316eab4f9961d",
+    "gate": 3,
+    "reason": "FREQUENCY_VIOLATION",
+    "extra": " | Last_Claim_Date: 2026-04-05T12:51:56.290Z | Gap: 0 days",
+    "timestamp": "2026-04-05T12:52:32.803Z"
+  },
+  {
+    "type": "REJECTED",
+    "citizenHash": "23c2c5a6c0583862f67313f0d5ce69f39e3928cee02b5987297ca4bcf6640803",
+    "gate": "PRE",
+    "reason": "REPLAY_DETECTED",
+    "extra": "",
+    "timestamp": "2026-04-05T13:24:11.486Z"
+  },
+  {
+    "type": "REJECTED",
+    "citizenHash": "b5d6d6f2c3cc9fef16847ed860314b5d300beb7a7a1ed939f9e7e27e091b272f",
+    "gate": "PRE",
+    "reason": "REPLAY_DETECTED",
+    "extra": "",
+    "timestamp": "2026-04-05T13:25:45.143Z"
+  },
+  {
+    "type": "REJECTED",
+    "citizenHash": "b5d6d6f2c3cc9fef16847ed860314b5d300beb7a7a1ed939f9e7e27e091b272f",
+    "gate": 1,
+    "reason": "Scheme_Amount = 1000",
+    "extra": "",
+    "timestamp": "2026-04-05T13:26:03.760Z"
+  },
+  {
+    "type": "REJECTED",
+    "citizenHash": "b5d6d6f2c3cc9fef16847ed860314b5d300beb7a7a1ed939f9e7e27e091b272f",
+    "gate": 1,
+    "reason": "Scheme_Amount = 1000",
+    "extra": "",
+    "timestamp": "2026-04-05T13:59:12.658Z"
+  },
+  {
+    "type": "REJECTED",
+    "citizenHash": "b5d6d6f2c3cc9fef16847ed860314b5d300beb7a7a1ed939f9e7e27e091b272f",
+    "gate": "PRE",
+    "reason": "REPLAY_DETECTED",
+    "extra": "",
+    "timestamp": "2026-04-05T13:59:15.008Z"
+  },
+  {
+    "type": "REJECTED",
+    "citizenHash": "b5d6d6f2c3cc9fef16847ed860314b5d300beb7a7a1ed939f9e7e27e091b272f",
+    "gate": 1,
+    "reason": "Claim_Count = 4",
+    "extra": "",
+    "timestamp": "2026-04-05T13:59:21.610Z"
+  },
+  {
+    "type": "REJECTED",
+    "citizenHash": "b5d6d6f2c3cc9fef16847ed860314b5d300beb7a7a1ed939f9e7e27e091b272f",
+    "gate": "PRE",
+    "reason": "REPLAY_DETECTED",
+    "extra": "",
+    "timestamp": "2026-04-05T13:59:22.210Z"
+  },
+  {
+    "type": "REJECTED",
+    "citizenHash": "b5d6d6f2c3cc9fef16847ed860314b5d300beb7a7a1ed939f9e7e27e091b272f",
+    "gate": "PRE",
+    "reason": "REPLAY_DETECTED",
+    "extra": "",
+    "timestamp": "2026-04-05T13:59:23.334Z"
+  },
+  {
+    "type": "REJECTED",
+    "citizenHash": "b5d6d6f2c3cc9fef16847ed860314b5d300beb7a7a1ed939f9e7e27e091b272f",
+    "gate": "PRE",
+    "reason": "REPLAY_DETECTED",
+    "extra": "",
+    "timestamp": "2026-04-05T13:59:26.021Z"
+  },
+  {
+    "type": "REJECTED",
+    "citizenHash": "b59e04d922fd1944b4b8cb4c562213b53b76b011b094e787a2c199cc7afeebca",
+    "gate": 1,
+    "reason": "Claim_Count = 5",
+    "extra": "",
+    "timestamp": "2026-04-05T14:00:00.203Z"
+  },
+  {
+    "type": "REJECTED",
+    "citizenHash": "b59e04d922fd1944b4b8cb4c562213b53b76b011b094e787a2c199cc7afeebca",
+    "gate": "PRE",
+    "reason": "REPLAY_DETECTED",
+    "extra": "",
+    "timestamp": "2026-04-05T14:00:19.385Z"
+  },
+  {
+    "type": "REJECTED",
+    "citizenHash": "b59e04d922fd1944b4b8cb4c562213b53b76b011b094e787a2c199cc7afeebca",
+    "gate": "PRE",
+    "reason": "REPLAY_DETECTED",
+    "extra": "",
+    "timestamp": "2026-04-05T14:00:21.173Z"
+  },
+  {
+    "type": "REJECTED",
+    "citizenHash": "b59e04d922fd1944b4b8cb4c562213b53b76b011b094e787a2c199cc7afeebca",
+    "gate": 1,
+    "reason": "Claim_Count = 5",
+    "extra": "",
+    "timestamp": "2026-04-05T14:01:49.129Z"
+  },
+  {
+    "type": "REJECTED",
+    "citizenHash": "e2e087768fcf984cbd94024f21d3466d933fc4939bc06cecacf2c52beaa5964f",
+    "gate": 1,
+    "reason": "Scheme_Amount = 5000",
+    "extra": "",
+    "timestamp": "2026-04-05T14:02:20.975Z"
+  },
+  {
+    "type": "REJECTED",
+    "citizenHash": "e2e087768fcf984cbd94024f21d3466d933fc4939bc06cecacf2c52beaa5964f",
+    "gate": "PRE",
+    "reason": "REPLAY_DETECTED",
+    "extra": "",
+    "timestamp": "2026-04-05T14:02:36.655Z"
+  },
+  {
+    "type": "REJECTED",
+    "citizenHash": "b79b1d1971e7399f39057e496705b53812a8a00ffc9800638e4c7f175646b236",
+    "gate": "PRE",
+    "reason": "REPLAY_DETECTED",
+    "extra": "",
+    "timestamp": "2026-04-05T15:15:52.520Z"
+  }
+]

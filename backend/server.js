@@ -39,46 +39,81 @@ function checkReplay(hash, scheme, amount) {
 }
 
 // MAIN API
+const { logRejection } = require("./utils/logger");
+
 app.post("/apply", (req, res) => {
+  // 🚫 SYSTEM LOCK CHECK
   if (system.getStatus() !== "ACTIVE") {
     return res.json({ status: "SYSTEM_FROZEN" });
   }
 
   const { id, scheme, amount } = req.body;
-
   const hash = hashCitizen(id);
-
-  // Duplicate check
-  if (requestLog.some(r => r.hash === hash)) {
-    return res.json({ status: "DUPLICATE_REJECTED" });
-  }
-
-  // Replay
-  const replay = checkReplay(hash, scheme, amount);
-  if (replay !== "PASS") return res.json({ status: replay });
-
   const user = users.find(u => u.Citizen_ID === id);
 
-  // Gate1
+  // ======================
+  // 🔐 GATE 1
+  // ======================
   const g1 = gate1(user, req.body);
-  if (g1 !== "PASS") return res.json({ status: g1 });
 
-  // Gate2
-  const g2 = system.checkBudget(parseInt(amount));
-  if (g2 !== "PASS") return res.json({ status: g2 });
+  if (g1.status !== "PASS") {
+    logRejection({
+      citizenHash: hash,
+      gate: 1,
+      reason: g1.reason
+    });
 
-  // Gate3
+    return res.json({ status: g1.status });
+  }
+
+  // ======================
+  // 💰 GATE 2 (CHECK ONLY)
+  // ======================
+  const amountInt = parseInt(amount);
+
+  if (system.getBudget() - amountInt < 0) {
+    logRejection({
+      citizenHash: hash,
+      gate: 2,
+      reason: "BUDGET_INSUFFICIENT"
+    });
+
+    return res.json({ status: "BUDGET_INSUFFICIENT" });
+  }
+
+  // ======================
+  // ⏱️ GATE 3
+  // ======================
   const g3 = gate3(user);
-  if (g3 !== "PASS") return res.json({ status: g3 });
+
+  if (g3.status !== "PASS") {
+    logRejection({
+      citizenHash: hash,
+      gate: 3,
+      reason: "FREQUENCY_VIOLATION",
+      extra: ` | Last_Claim_Date: ${g3.lastDate} | Gap: ${g3.gap} days`
+    });
+
+    return res.json({ status: g3.status });
+  }
+
+  // ======================
+  // ✅ FINAL APPROVAL
+  // ======================
+
+  // Deduct ONLY after all gates pass
+  system.deductBudget(amountInt);
+
+  // Auto-lock when budget = 0
+  if (system.getBudget() === 0) {
+    system.setStatus("BUDGET_EXHAUSTED");
+  }
 
   // Update runtime registry
   user.Last_Claim_Date = new Date().toISOString();
   user.Claim_Count = parseInt(user.Claim_Count) + 1;
 
-  // Deduct budget
-  system.deductBudget(parseInt(amount));
-
-  // Ledger
+  // Ledger entry
   const tx = addTransaction({
     CitizenHash: hash,
     Scheme: scheme,
@@ -87,34 +122,30 @@ app.post("/apply", (req, res) => {
     Income_Tier: user.Income_Tier
   });
 
-  // Integrity check
-  const check = verifyLedger();
-  if (check.status === "TAMPERED") {
+  res.json({ status: "SUCCESS", tx });
+});
+const { getLogs } = require("./utils/logger");
+app.get("/analytics", (req, res) => {
+  const logs = getLogs();
+
+  const fraudStats = {
+    totalRejections: logs.length,
+    gate1: logs.filter(l => l.gate === 1).length,
+    gate2: logs.filter(l => l.gate === 2).length,
+    gate3: logs.filter(l => l.gate === 3).length
+  };
+
+  res.json({
+    logs,
+    fraudStats
+  });
+});
+app.get("/tamper", (req, res) => {
+  const result = verifyLedger();
+
+  if (result.status === "TAMPERED") {
     system.setStatus("FROZEN");
   }
 
-  res.json({ status: "SUCCESS", tx });
+  res.json(result);
 });
-
-// Admin APIs
-app.get("/dashboard", (req, res) => {
-  res.json({
-    status: system.getStatus(),
-    budget: system.getBudget(),
-    transactions: readLedger().slice(-10)
-  });
-});
-
-app.post("/pause", (req, res) => {
-  system.setStatus("PAUSED");
-  res.json({ status: "PAUSED" });
-});
-
-app.post("/resume", (req, res) => {
-  if (system.getStatus() === "PAUSED") {
-    system.setStatus("ACTIVE");
-  }
-  res.json({ status: system.getStatus() });
-});
-
-app.listen(5000, () => console.log("Server running"));

@@ -1,26 +1,78 @@
+let status = "ACTIVE";
 let budget = 1000000;
-let status = "ACTIVE"; // ACTIVE, PAUSED, FROZEN, BUDGET_EXHAUSTED
 
-function checkBudget(amount) {
-  if (budget - amount < 0) return "BUDGET_INSUFFICIENT";
-  return "PASS";
-}
+let freezeReason = null;
 
-function deductBudget(amount) {
-  budget -= amount;
-  if (budget === 0) status = "BUDGET_EXHAUSTED";
-}
-
+// ==========================
+// STATUS
+// ==========================
 function getStatus() {
   return status;
 }
 
-function setStatus(newStatus) {
+function setStatus(newStatus, reason = null) {
   status = newStatus;
+  freezeReason = reason;
+
+  if (newStatus === "FROZEN") {
+    logFreeze(reason); // ✅ ADD THIS
+  }
+
+  console.log(
+    `SYSTEM STATUS → ${newStatus} | Reason: ${reason}`
+  );
 }
 
+
+function getFreezeReason() {
+  return freezeReason;
+}
+
+// ==========================
+// BUDGET
+// ==========================
 function getBudget() {
   return budget;
 }
 
-module.exports = { checkBudget, deductBudget, getStatus, setStatus, getBudget };
+function deductBudget(amount) {
+  budget -= amount;
+
+  // 💰 AUTO FREEZE ON ZERO
+  if (budget === 0) {
+    setStatus("FROZEN", "BUDGET_EXHAUSTED");
+  }
+}
+
+function resetSystem() {
+  status = "ACTIVE";
+  freezeReason = null;
+  budget = 1000000;
+}
+
+
+const fs = require("fs");
+
+function logFreeze(reason) {
+  let logs = [];
+
+  if (fs.existsSync("freezeLog.json")) {
+    logs = JSON.parse(fs.readFileSync("freezeLog.json"));
+  }
+
+  logs.push({
+    reason,
+    timestamp: new Date().toISOString()
+  });
+
+  fs.writeFileSync("freezeLog.json", JSON.stringify(logs, null, 2));
+}
+
+module.exports = {
+  getStatus,
+  setStatus,
+  getFreezeReason,
+  getBudget,
+  deductBudget,
+  resetSystem
+};

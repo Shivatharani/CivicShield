@@ -37,7 +37,10 @@ app.post("/apply", (req, res) => {
   setTimeout(() => { // 🔥 delay for duplicate demo
 
     if (system.getStatus() !== "ACTIVE") {
-      return res.json({ status: "SYSTEM_FROZEN" });
+      return res.json({
+        status: "SYSTEM_FROZEN",
+        reason: system.getFreezeReason()
+      });
     }
 
     const { id, scheme, amount } = req.body;
@@ -140,11 +143,13 @@ app.post("/apply", (req, res) => {
 
     // 🚨 TAMPER DETECT
     if (txResult.status === "LEDGER_TAMPERED") {
-      system.setStatus("FROZEN");
+      system.setStatus("FROZEN", "LEDGER_TAMPERED");
 
       removeFromQueue(citizenHash);
+
       return res.json({
-        status: "LEDGER_TAMPERED",
+        status: "SYSTEM_FROZEN",
+        reason: "LEDGER_TAMPERED",
         error: txResult.error
       });
     }
@@ -157,6 +162,32 @@ app.post("/apply", (req, res) => {
     });
 
   }, 2000); // delay
+});
+
+// 🛑 ADMIN PAUSE
+app.post("/admin/pause", (req, res) => {
+  system.setStatus("FROZEN", "ADMIN_PAUSED");
+
+  res.json({
+    status: "SYSTEM_FROZEN",
+    reason: "ADMIN_PAUSED"
+  });
+});
+
+// ▶️ ADMIN UNPAUSE
+app.post("/admin/unpause", (req, res) => {
+  if (system.getFreezeReason() !== "ADMIN_PAUSED") {
+    return res.json({
+      status: "FAILED",
+      message: "Only ADMIN_PAUSED can be resumed"
+    });
+  }
+
+  system.setStatus("ACTIVE", null);
+
+  res.json({
+    status: "SYSTEM_RESUMED"
+  });
 });
 
 // ==========================
@@ -172,7 +203,12 @@ app.get("/analytics", (req, res) => {
     gate3: logs.filter(l => l.gate === 3).length
   };
 
-  res.json({ logs, fraudStats });
+  res.json({
+    logs,
+    fraudStats,
+    systemStatus: system.getStatus(),        // ✅ ADD THIS
+    freezeReason: system.getFreezeReason()   // ✅ ADD THIS
+  });
 });
 
 // ==========================
@@ -182,7 +218,7 @@ app.get("/tamper", (req, res) => {
   const result = verifyLedger();
 
   if (result.status === "TAMPERED") {
-    system.setStatus("FROZEN");
+    system.setStatus("FROZEN", "LEDGER_TAMPERED");
   }
 
   res.json(result);

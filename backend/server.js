@@ -39,9 +39,8 @@ let requestLog = [];
 // DB CONNECT
 // ==========================
 mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log("MongoDB Connected"))
-  .catch(() => console.log("MongoDB Error"));
-
+  .then(() => console.log("✅ MongoDB Atlas Connected"))
+  .catch(err => console.log("❌ MongoDB Error:", err));
 // ==========================
 // LOAD DATASET
 // ==========================

@@ -4,10 +4,15 @@ import "./globals.css";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { ToastProvider } from "../context/ToastContext";
 import Navbar from "../components/Navbar";
+import { Geist } from "next/font/google";
+import { cn } from "@/lib/utils";
+
+const geist = Geist({subsets:['latin'],variable:'--font-sans'});
+
 
 export default function RootLayout({ children }: any) {
   return (
-    <html lang="en">
+    <html lang="en" className={cn("font-sans", geist.variable)}>
       <head>
         <title>CivicShield | Secure Welfare Distribution</title>
         <meta name="description" content="Blockchain-backed fraud detection and automated welfare approvals." />

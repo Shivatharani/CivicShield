@@ -83,17 +83,17 @@ app.post("/login", async (req, res) => {
 
 // GOOGLE LOGIN
 app.post("/google-login", async (req, res) => {
-  const { credential } = req.body;
+  const { credential, role } = req.body;
 
   try {
     const userData = await verifyGoogleToken(credential);
 
     const token = generateToken({
       username: userData.email,
-      role: "VIEWER"
+      role: role || "VIEWER"
     });
 
-    res.json({ token, role: "VIEWER" });
+    res.json({ token, role: role || "VIEWER" });
 
   } catch {
     res.status(401).json({ error: "Invalid Google token" });

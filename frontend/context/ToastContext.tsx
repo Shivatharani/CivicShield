@@ -40,7 +40,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
                 ? "bg-green-100 border-green-200 text-green-700"
                 : toast.type === "error"
                 ? "bg-red-100 border-red-200 text-red-700"
-                : "bg-blue-100 border-blue-200 text-blue-700"
+                : "bg-amber-100 border-amber-200 text-amber-700"
             }`}
           >
             {toast.message}

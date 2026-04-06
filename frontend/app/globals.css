@@ -2,70 +2,56 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background-pastel: #fdf6f0; /* Soft Cream */
-  --primary-pastel: #acd1af;    /* Mint Green */
-  --secondary-pastel: #fce4ec;  /* Soft Pink */
-  --accent-pastel: #e1f5fe;     /* Pale Blue */
-  --text-dark: #4a4a4a;
-  --text-light: #7a7a7a;
-  --white: #ffffff;
+@layer base {
+  :root {
+    --background: oklch(0.985 0.005 70);
+    --foreground: oklch(0.145 0.01 70);
+    --card: oklch(1 0 0);
+    --card-foreground: oklch(0.145 0.01 70);
+    --popover: oklch(1 0 0);
+    --popover-foreground: oklch(0.145 0.01 70);
+    --primary: oklch(0.769 0.188 70.08); /* Amber 500 */
+    --primary-foreground: oklch(0.985 0 0);
+    --secondary: oklch(0.92 0.02 70);
+    --secondary-foreground: oklch(0.205 0.01 70);
+    --muted: oklch(0.97 0.01 70);
+    --muted-foreground: oklch(0.4 0.02 70);
+    --accent: oklch(0.97 0.1 70.08); /* Light Amber accent */
+    --accent-foreground: oklch(0.205 0.01 70);
+    --destructive: oklch(0.577 0.245 27.325);
+    --border: oklch(0.9 0.01 70);
+    --input: oklch(0.9 0.01 70);
+    --ring: oklch(0.769 0.188 70.08);
+    --chart-1: oklch(0.769 0.188 70.08);
+    --chart-2: oklch(0.6 0.15 70);
+    --chart-3: oklch(0.5 0.12 70);
+    --chart-4: oklch(0.4 0.1 70);
+    --chart-5: oklch(0.3 0.08 70);
+    --radius: 0.75rem;
+  }
 }
 
-body {
-  background-color: var(--background-pastel);
-  color: var(--text-dark);
-  font-family: 'Inter', sans-serif;
-  margin: 0;
-  padding: 0;
+@layer components {
+  .premium-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 1.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .premium-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 25px -5px rgba(245, 158, 11, 0.1);
+    border-color: var(--primary);
+  }
 }
 
-h1, h2, h3, h4 {
-  color: #3d3d3d;
-}
-
-/* Pastry Buttons */
-.btn-primary {
-  background-color: var(--primary-pastel);
-  color: #3b5a3e;
-  border-radius: 12px;
-  padding: 10px 20px;
-  font-weight: 600;
-  transition: all 0.2s ease;
-  border: 1px solid rgba(0,0,0,0.05);
-}
-
-.btn-primary:hover {
-  filter: brightness(0.95);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-}
-
-.btn-secondary {
-  background-color: var(--secondary-pastel);
-  color: #7b435b;
-  border-radius: 12px;
-  padding: 10px 20px;
-  font-weight: 600;
-  transition: all 0.2s ease;
-}
-
-/* Pastry Cards */
-.card-pastry {
-  background: var(--white);
-  border-radius: 20px;
-  padding: 24px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.03);
-  border: 1px solid rgba(255,255,255,0.5);
-}
-
-/* Toast Animations */
-@keyframes slide-up {
-  from { transform: translateY(100%); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
-}
-
-@keyframes fade-out {
-  from { opacity: 1; }
-  to { opacity: 0; }
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
 }

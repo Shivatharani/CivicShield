@@ -206,5 +206,37 @@
     "reason": "FREQUENCY_VIOLATION",
     "extra": "",
     "timestamp": "2026-04-06T08:20:18.265Z"
+  },
+  {
+    "type": "REJECTED",
+    "citizenHash": "c86763bcf63d72c7281d43cdc532175ac7ee103e01fb736f0617f6a9b696a229",
+    "gate": "PRE",
+    "reason": "REPLAY_DETECTED",
+    "extra": "",
+    "timestamp": "2026-04-06T15:27:48.386Z"
+  },
+  {
+    "type": "REJECTED",
+    "citizenHash": "cab1c9affaa44683f67f6a36aae723d6a0d098752512c67cc3dce2b9a32d92fb",
+    "gate": 1,
+    "reason": "Claim_Count = 4",
+    "extra": "",
+    "timestamp": "2026-04-06T15:28:11.648Z"
+  },
+  {
+    "type": "REJECTED",
+    "citizenHash": "5d1e980f037ef7967dbaa298cd68297bace17d0273c1b714889404078b1bb607",
+    "gate": 1,
+    "reason": "Claim_Count = 5",
+    "extra": "",
+    "timestamp": "2026-04-06T15:28:49.616Z"
+  },
+  {
+    "type": "REJECTED",
+    "citizenHash": "5d1e980f037ef7967dbaa298cd68297bace17d0273c1b714889404078b1bb607",
+    "gate": 1,
+    "reason": "Claim_Count = 5",
+    "extra": "",
+    "timestamp": "2026-04-06T15:29:40.824Z"
   }
 ]

@@ -2,37 +2,41 @@
 
 import { useState } from "react";
 import axios from "axios";
-import { FaEye, FaEyeSlash, FaUserPlus } from "react-icons/fa";
+import { FaUserPlus, FaChevronRight, FaTerminal, FaGlasses, FaEye, FaEyeSlash } from "react-icons/fa";
 import { useToast } from "../../context/ToastContext";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export default function Signup() {
   const [show, setShow] = useState(false);
+  const [loading, setLoading] = useState(false);
   const { showToast } = useToast();
 
   const [form, setForm] = useState({
     email: "",
     password: "",
     confirm: "",
-    role: "VIEWER"
+    role: "OPERATOR"
   });
-
-  const [error, setError] = useState("");
 
   const validate = () => {
     if (!form.email.includes("@")) return "Invalid email format";
-    if (form.password.length < 6) return "Password must be at least 6 characters";
-    if (form.password !== form.confirm) return "Passwords do not match";
+    if (form.password.length < 6) return "Requirements: 6+ characters";
+    if (form.password !== form.confirm) return "Verification mismatch";
     return null;
   };
 
   const signup = async () => {
     const err = validate();
     if (err) {
-      setError(err);
       showToast(err, "error");
       return;
     }
 
+    setLoading(true);
     try {
       await axios.post("http://localhost:5000/signup", {
         username: form.email,
@@ -40,109 +44,118 @@ export default function Signup() {
         role: form.role
       });
 
-      showToast("Signup successful! You can now login.", "success");
+      showToast("Access Level Created Successfully", "success");
       
       setTimeout(() => {
         window.location.href = "/login";
-      }, 1000);
+      }, 1500);
 
     } catch {
-      setError("Signup failed");
-      showToast("Signup failed. Please try again.", "error");
+      showToast("System Error: Registration failed", "error");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="flex justify-center items-center py-20 min-h-screen bg-[#fdf6f0]">
+    <div className="flex justify-center items-center py-20 min-h-screen bg-[#f8fafc] relative overflow-hidden text-slate-900">
+      
+      {/* Background Decor */}
+      <div className="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-amber-50 blur-[120px] rounded-full"></div>
+      <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-50 blur-[120px] rounded-full"></div>
 
-      <div className="bg-white shadow-2xl p-10 rounded-3xl w-full max-w-md border border-gray-100 flex flex-col items-center">
-
-        <div className="w-16 h-16 bg-[#e1f5fe] rounded-2xl flex items-center justify-center mb-6">
-          <FaUserPlus className="text-blue-400 text-2xl" />
-        </div>
-
-        <h2 className="text-3xl font-extrabold mb-1 text-gray-900 text-center">
-          Create Account
-        </h2>
-        <p className="text-gray-500 mb-8 text-center text-sm font-medium">
-          Join the CivicShield ecosystem
-        </p>
-
-        {/* EMAIL */}
-        <input
-          className="border border-gray-100 bg-gray-50 p-4 w-full mb-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-100 transition-all"
-          placeholder="Email Address"
-          onChange={(e) =>
-            setForm({ ...form, email: e.target.value })
-          }
-        />
-
-        {/* PASSWORD */}
-        <div className="relative mb-4 w-full">
-          <input
-            type={show ? "text" : "password"}
-            className="border border-gray-100 bg-gray-50 p-4 w-full rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-100 transition-all"
-            placeholder="Password"
-            onChange={(e) =>
-              setForm({ ...form, password: e.target.value })
-            }
-          />
-
-          <span
-            className="absolute right-4 top-4.5 cursor-pointer text-gray-400 hover:text-blue-400 transition-colors"
-            onClick={() => setShow(!show)}
-          >
-            {show ? <FaEyeSlash className="mt-1" /> : <FaEye className="mt-1" />}
-          </span>
-        </div>
-
-        {/* CONFIRM PASSWORD */}
-        <input
-          type={show ? "text" : "password"}
-          className="border border-gray-100 bg-gray-50 p-4 w-full mb-6 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-100 transition-all"
-          placeholder="Confirm Password"
-          onChange={(e) =>
-            setForm({ ...form, confirm: e.target.value })
-          }
-        />
-
-        {/* ROLE */}
-        <div className="mb-6 w-full">
-          <label className="block mb-2 font-bold text-xs uppercase tracking-widest text-gray-400 ml-1">
-            Assign Role
-          </label>
-
-          <select
-            className="border border-gray-100 bg-gray-50 p-4 w-full rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-100 transition-all appearance-none cursor-pointer"
-            onChange={(e) =>
-              setForm({ ...form, role: e.target.value })
-            }
-          >
-            <option value="VIEWER">Viewer (Dashboard Only)</option>
-            <option value="OPERATOR">Operator (Full Control)</option>
-          </select>
-        </div>
-
-        {/* ERROR */}
-        {error && (
-          <div className="text-red-500 mb-4 text-xs font-bold uppercase tracking-widest text-center">
-            {error}
+      <Card className="w-full max-w-md animate-fade-in-up z-10 border-2 border-amber-100 shadow-2xl shadow-amber-100/50 rounded-[32px] overflow-hidden">
+        <CardContent className="p-10 flex flex-col items-center">
+          <div className="flex flex-col items-center mb-10 w-full">
+             <div className="w-14 h-14 bg-amber-50 rounded-2xl flex items-center justify-center mb-4 border border-amber-100">
+                <FaUserPlus className="text-amber-600 text-2xl" />
+             </div>
+             <h2 className="text-3xl font-black tracking-tight uppercase">Register Access</h2>
+             <p className="text-slate-500 text-sm font-medium mt-1 uppercase tracking-widest text-[10px]">Security Credential Portal</p>
           </div>
-        )}
 
-        {/* BUTTON */}
-        <button
-          onClick={signup}
-          className="bg-[#acd1af] text-[#2c4c2e] w-full py-4 rounded-xl font-bold text-lg hover:shadow-lg transition-all mb-4 active:scale-95"
-        >
-          Create Account
-        </button>
+          <div className="space-y-6 w-full text-left">
+            <div>
+              <Label className="block mb-2 text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Enterprise ID</Label>
+              <Input
+                className="bg-white border border-slate-200 h-14 w-full rounded-xl focus-visible:ring-amber-600 transition-all font-medium placeholder-slate-300"
+                placeholder="id@civicshield.gov"
+                onChange={(e) => setForm({ ...form, email: e.target.value })}
+              />
+            </div>
 
-        <p className="mt-8 text-sm text-gray-500">
-          Already have an account? <a href="/login" className="text-blue-400 font-bold hover:underline">Login</a>
-        </p>
+            <div>
+              <Label className="block mb-2 text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Access Code</Label>
+              <div className="relative">
+                 <Input
+                   type={show ? "text" : "password"}
+                   className="bg-white border border-slate-200 h-14 w-full rounded-xl focus-visible:ring-amber-600 transition-all font-medium placeholder-slate-300 pr-12"
+                   placeholder="••••••••"
+                   onChange={(e) => setForm({ ...form, password: e.target.value })}
+                 />
+                 <span
+                   className="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer text-slate-300 hover:text-amber-600 transition-colors z-10"
+                   onClick={() => setShow(!show)}
+                 >
+                   {show ? <FaEyeSlash /> : <FaEye />}
+                 </span>
+              </div>
+            </div>
 
-      </div>
+            <div>
+              <Label className="block mb-2 text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Verify Access Code</Label>
+              <Input
+                type="password"
+                className="bg-white border border-slate-200 h-14 w-full rounded-xl focus-visible:ring-amber-600 transition-all font-medium placeholder-slate-300"
+                placeholder="••••••••"
+                onChange={(e) => setForm({ ...form, confirm: e.target.value })}
+              />
+            </div>
+
+            <div>
+              <Label className="block mb-2 text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Engagement Level</Label>
+              <div className="grid grid-cols-2 gap-3">
+                <Button
+                  variant="outline"
+                  onClick={() => setForm({ ...form, role: "OPERATOR" })}
+                  className={`h-auto p-4 rounded-xl border flex flex-col items-center gap-2 transition-all ${
+                    form.role === "OPERATOR" 
+                    ? "bg-amber-50 border-amber-600 text-amber-600 shadow-sm" 
+                    : "bg-white border-slate-200 text-slate-400 hover:border-slate-300"
+                  }`}
+                >
+                  <FaTerminal className="text-lg" />
+                  <span className="text-[10px] font-black">OPERATOR</span>
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => setForm({ ...form, role: "VIEWER" })}
+                  className={`h-auto p-4 rounded-xl border flex flex-col items-center gap-2 transition-all ${
+                    form.role === "VIEWER" 
+                    ? "bg-slate-900 border-slate-900 text-white shadow-lg lg:hover:bg-slate-800 lg:hover:text-white" 
+                    : "bg-white border-slate-200 text-slate-400 hover:border-slate-300"
+                  }`}
+                >
+                  <FaGlasses className="text-lg" />
+                  <span className="text-[10px] font-black">VIEWER</span>
+                </Button>
+              </div>
+            </div>
+
+            <Button
+              onClick={signup}
+              disabled={loading}
+              className="w-full h-14 text-lg bg-amber-500 hover:bg-amber-600 text-white rounded-xl font-bold shadow-lg shadow-amber-200 transition-all active:scale-95 mt-4"
+            >
+              {loading ? "Registering..." : "Assign Level"} <FaChevronRight className="text-sm ml-2" />
+            </Button>
+          </div>
+
+          <p className="mt-8 text-center text-sm text-slate-500 font-medium">
+            Existing Identity? <Link href="/login" className="text-amber-600 font-black hover:underline">Authorize Access</Link>
+          </p>
+        </CardContent>
+      </Card>
     </div>
   );
 }

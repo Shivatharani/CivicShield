@@ -1,87 +1,119 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 
-export default function Home() {
-  const [id, setId] = useState("");
-  const [scheme, setScheme] = useState("");
-  const [amount, setAmount] = useState("");
-  const [result, setResult] = useState<any>(null);
+export default function Admin() {
+  const [data, setData] = useState<any>({});
 
-  const submit = async () => {
-    try {
-      const res = await axios.post("http://localhost:5000/apply", {
-        id,
-        scheme,
-        amount
-      });
+  const fetchData = async () => {
+    const res = await axios.get("http://localhost:5000/dashboard");
+    setData(res.data);
+  };
 
-      setResult(res.data);
-    } catch (err) {
-      setResult({ status: "ERROR", message: "Backend not reachable" });
-    }
+  useEffect(() => {
+    fetchData();
+    const interval = setInterval(fetchData, 5000); // 🔁 auto refresh
+    return () => clearInterval(interval);
+  }, []);
+
+  const pause = async () => {
+    await axios.post("http://localhost:5000/admin/pause");
+    fetchData();
+  };
+
+  const resume = async () => {
+    await axios.post("http://localhost:5000/admin/unpause");
+    fetchData();
+  };
+
+  const downloadReport = () => {
+    window.open("http://localhost:5000/tamper-report");
   };
 
   return (
-    <div className="p-10 max-w-xl mx-auto">
+    <div className="p-10">
 
-      <h2 className="text-2xl font-bold mb-4">
-        Apply for Welfare Scheme
-      </h2>
+      <h1 className="text-2xl font-bold mb-4">Admin Dashboard</h1>
 
-      {/* 🚨 SYSTEM FREEZE ALERT */}
-      {result?.status === "SYSTEM_FROZEN" && (
-        <div className="bg-red-600 text-white p-4 rounded mb-4">
-          🚨 SYSTEM FROZEN: {result.reason}
-        </div>
-      )}
+      {/* 🔥 SYSTEM STATUS */}
+      <div className="mb-4">
+        <span className={`px-3 py-1 rounded text-white ${
+          data.systemStatus === "ACTIVE"
+            ? "bg-green-500"
+            : data.systemStatus === "PAUSED"
+            ? "bg-yellow-500"
+            : "bg-red-500"
+        }`}>
+          {data.systemStatus}
+        </span>
 
-      {/* ✅ SUCCESS MESSAGE */}
-      {result?.status === "SUCCESS" && (
-        <div className="bg-green-600 text-white p-4 rounded mb-4">
-          ✅ Transaction Successful
-        </div>
-      )}
-
-      {/* ⚠️ ERROR / FRAUD MESSAGE */}
-      {result &&
-        result.status !== "SUCCESS" &&
-        result.status !== "SYSTEM_FROZEN" && (
-          <div className="bg-yellow-500 text-white p-4 rounded mb-4">
-            ⚠️ {result.status}
-          </div>
+        {data.systemStatus !== "ACTIVE" && (
+          <span className="ml-3 text-red-600">
+            ({data.freezeReason})
+          </span>
         )}
+      </div>
 
-      <input
-        className="border p-2 w-full mb-3"
-        placeholder="Citizen ID"
-        onChange={(e) => setId(e.target.value)}
-      />
+      {/* 💰 BUDGET */}
+      <div className="mb-2">💰 Budget: ₹{data.budget}</div>
 
-      <input
-        className="border p-2 w-full mb-3"
-        placeholder="Scheme"
-        onChange={(e) => setScheme(e.target.value)}
-      />
+      {/* 📊 STATS */}
+      <div>Total Transactions: {data.totalTransactions}</div>
+      <div>Approval Rate: {data.approvalRate}%</div>
 
-      <input
-        className="border p-2 w-full mb-3"
-        placeholder="Amount"
-        onChange={(e) => setAmount(e.target.value)}
-      />
+      {/* 🎛 CONTROLS */}
+      <div className="mt-4 space-x-2">
 
-      <button
-        onClick={submit}
-        className="bg-blue-600 text-white px-4 py-2 rounded"
-      >
-        Submit Request
-      </button>
+        <button
+          onClick={pause}
+          className="bg-red-600 text-white px-4 py-2 rounded"
+        >
+          Emergency Pause
+        </button>
 
-      {/* 🔍 RAW RESPONSE (for debugging/demo) */}
-      <pre className="bg-gray-100 mt-5 p-4 rounded text-xs">
-        {JSON.stringify(result, null, 2)}
-      </pre>
+        <button
+          onClick={resume}
+          disabled={data.systemStatus !== "PAUSED"} // ✅ RULE
+          className="bg-green-600 text-white px-4 py-2 rounded"
+        >
+          Resume
+        </button>
+
+        {data.systemStatus === "FROZEN" && ( // ✅ RULE
+          <button
+            onClick={downloadReport}
+            className="bg-yellow-600 text-white px-4 py-2 rounded"
+          >
+            Download Tamper Report
+          </button>
+        )}
+      </div>
+
+      {/* 📜 LAST 10 TRANSACTIONS */}
+      <div className="mt-6">
+        <h2 className="font-semibold">Last 10 Transactions</h2>
+
+        {data.last10?.map((tx: any, i: number) => (
+          <div key={i} className="border-b py-2 text-sm">
+            {tx.CitizenHash} | {tx.Scheme} | ₹{tx.Amount} | {tx.status} | {tx.gate}
+          </div>
+        ))}
+      </div>
+
+      {/* 📂 REGISTRY VIEWER */}
+      <div className="mt-6">
+        <h2 className="font-semibold">Registry Viewer</h2>
+
+        <div className="max-h-40 overflow-auto text-xs">
+          {data.registry?.map((u: any, i: number) => (
+            <div key={i} className="border-b py-1">
+              {u.Citizen_ID} | Claims: {u.Claim_Count} | Last: {u.Last_Claim_Date}
+            </div>
+          ))}
+        </div>
+      </div>
+
     </div>
   );
 }

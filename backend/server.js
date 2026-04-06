@@ -8,6 +8,7 @@ const { gate1, gate3 } = require("./utils/gates");
 const { addTransaction, verifyLedger } = require("./utils/ledger");
 const system = require("./utils/system");
 const { logRejection, getLogs } = require("./utils/logger");
+const { readLedger } = require("./utils/ledger");
 
 const {
   checkDuplicate,
@@ -190,6 +191,56 @@ app.post("/admin/unpause", (req, res) => {
   });
 });
 
+app.get("/dashboard", (req, res) => {
+  const logs = getLogs();         // rejected
+  const ledger = readLedger();    // approved
+
+  const approved = ledger.length;
+  const rejected = logs.length;
+
+  const totalTransactions = approved + rejected;
+
+  const approvalRate =
+    totalTransactions === 0
+      ? 0
+      : ((approved / totalTransactions) * 100).toFixed(2);
+
+  // ✅ APPROVED TRANSACTIONS
+  const approvedTx = ledger.slice(-10).map(tx => ({
+    CitizenHash: tx.CitizenHash.slice(0, 8),
+    Scheme: tx.Scheme,
+    Amount: tx.Amount,
+    Region_Code: tx.Region_Code,
+    status: "APPROVED",
+    gate: "Gate3"
+  }));
+
+  // ✅ REJECTED TRANSACTIONS
+  const rejectedTx = logs.slice(-10).map(log => ({
+    CitizenHash: log.citizenHash.slice(0, 8),
+    Scheme: "-",
+    Amount: "-",
+    Region_Code: "-",
+    status: "REJECTED",
+    gate: log.gate
+  }));
+
+  // ✅ COMBINE LAST 10
+  const last10 = [...approvedTx, ...rejectedTx]
+    .slice(-10)
+    .reverse();
+
+  res.json({
+    systemStatus: system.getStatus(),
+    freezeReason: system.getFreezeReason(),
+    budget: system.getBudget(),
+    totalTransactions,
+    approvalRate,
+    last10,
+    registry: users
+  });
+});
+
 // ==========================
 // 📊 ANALYTICS
 // ==========================
@@ -220,6 +271,21 @@ app.get("/tamper", (req, res) => {
   if (result.status === "TAMPERED") {
     system.setStatus("FROZEN", "LEDGER_TAMPERED");
   }
+
+  res.json(result);
+});
+
+app.get("/tamper-report", (req, res) => {
+  const result = verifyLedger();
+
+  if (result.status !== "TAMPERED") {
+    return res.json({ message: "No tampering detected" });
+  }
+
+  res.setHeader(
+    "Content-Disposition",
+    "attachment; filename=tamper_report.json"
+  );
 
   res.json(result);
 });

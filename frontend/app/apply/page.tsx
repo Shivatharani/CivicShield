@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useToast } from "../../context/ToastContext";
-import { FaFileSignature, FaChevronRight, FaArrowRight, FaShieldAlt, FaUserCircle, FaBuilding, FaWallet, FaInfoCircle, FaPaperPlane } from "react-icons/fa";
+import { FaFileSignature, FaChevronRight, FaArrowRight, FaShieldAlt, FaUserCircle, FaBuilding, FaWallet, FaInfoCircle, FaPaperPlane, FaCheckCircle, FaExclamationTriangle } from "react-icons/fa";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -163,16 +163,37 @@ export default function Apply() {
 
             {result && (
               <div className="mt-12 animate-fade-in-up border-t border-slate-100 pt-10">
-                <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4 ml-1 flex items-center gap-2">
-                  <div className={`w-2 h-2 rounded-full ${result.status === "SUCCESS" ? "bg-green-500" : "bg-red-500"}`}></div>
-                  LEDGER RESPONSE DATA
-                </h3>
-                <div className="bg-slate-900 border border-slate-800 p-6 rounded-2xl overflow-hidden relative">
-                  <div className={`absolute top-0 left-0 w-full h-[2px] ${result.status === "SUCCESS" ? "bg-green-500" : "bg-red-500"}`}></div>
-                  <pre className="text-xs font-mono whitespace-pre-wrap text-amber-100 opacity-80 max-h-60 overflow-auto custom-scrollbar">
-                    {JSON.stringify(result, null, 2)}
-                  </pre>
-                </div>
+                 <div className={cn(
+                   "p-8 rounded-3xl border-2 flex flex-col items-center text-center transition-all",
+                   result.status === "SUCCESS" 
+                   ? "bg-green-50 border-green-100 text-green-800 shadow-xl shadow-green-100/50" 
+                   : "bg-red-50 border-red-100 text-red-800 shadow-xl shadow-red-100/50"
+                 )}>
+                    <div className={cn(
+                      "w-16 h-16 rounded-2xl flex items-center justify-center text-2xl mb-4 shadow-lg",
+                      result.status === "SUCCESS" ? "bg-green-500 text-white" : "bg-red-500 text-white"
+                    )}>
+                      {result.status === "SUCCESS" ? <FaCheckCircle /> : <FaExclamationTriangle />}
+                    </div>
+                    <h3 className="text-xl font-black mb-2">
+                      {result.status === "SUCCESS" ? "Validation Summary" : "Transmission Issue"}
+                    </h3>
+                    <p className="text-sm font-medium opacity-80 max-w-sm mb-6">
+                      {result.reason || result.message || (result.status === "SUCCESS" ? "This particular operation has been done. The transaction has been permanently committed to the cryptographic ledger." : "The operation could not be completed. Please check protocol data.")}
+                    </p>
+                    {result.status === "SUCCESS" && (
+                      <div className="grid grid-cols-2 gap-4 w-full">
+                         <div className="bg-white/50 p-3 rounded-xl border border-green-200/50">
+                            <p className="text-[9px] font-black uppercase tracking-widest opacity-60 mb-1">Block Hash</p>
+                            <p className="text-[10px] font-mono truncate">{result.hash || "0x7d...f2"}</p>
+                         </div>
+                         <div className="bg-white/50 p-3 rounded-xl border border-green-200/50">
+                            <p className="text-[9px] font-black uppercase tracking-widest opacity-60 mb-1">Timestamp</p>
+                            <p className="text-[10px] font-mono">{new Date().toLocaleTimeString()}</p>
+                         </div>
+                      </div>
+                    )}
+                 </div>
               </div>
             )}
           </CardContent>

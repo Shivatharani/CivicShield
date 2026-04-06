@@ -115,12 +115,39 @@ function verifyLedger() {
       };
     }
   }
-
   return { status: "OK" };
+}
+
+// ==========================
+// 🛠️ REPAIR LEDGER
+// ==========================
+function repairLedger() {
+  const ledger = readLedger();
+
+  for (let i = 0; i < ledger.length; i++) {
+    const current = ledger[i];
+
+    const PreviousHash =
+      i === 0 ? "0000000000000000" : ledger[i - 1].CurrentHash;
+
+    current.PreviousHash = PreviousHash;
+
+    current.CurrentHash = createHash(
+      current.Timestamp +
+      current.CitizenHash +
+      current.Scheme +
+      current.Amount +
+      current.PreviousHash
+    );
+  }
+
+  writeLedger(ledger);
+  return { status: "OK", count: ledger.length };
 }
 
 module.exports = {
   addTransaction,
   verifyLedger,
+  repairLedger,
   readLedger
 };

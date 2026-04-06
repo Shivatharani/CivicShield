@@ -14,5 +14,13 @@
   {
     "reason": "ADMIN_PAUSED",
     "timestamp": "2026-04-06T15:26:40.560Z"
+  },
+  {
+    "reason": "LEDGER_TAMPERED",
+    "timestamp": "2026-04-06T18:11:05.097Z"
+  },
+  {
+    "reason": "ADMIN_PAUSED",
+    "timestamp": "2026-04-06T18:30:19.318Z"
   }
 ]

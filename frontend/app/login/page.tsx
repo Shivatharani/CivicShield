@@ -132,17 +132,17 @@ export default function Login() {
 
               {/* EMAIL */}
               <div className="w-full mb-5">
-                <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 mb-2 block">Enterprise ID</Label>
+                <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 mb-2 block">Email</Label>
                 <Input
                   className="bg-white border border-slate-200 h-14 w-full rounded-xl focus-visible:ring-amber-600 transition-all text-slate-900 placeholder-slate-300 font-medium"
-                  placeholder="id@civicshield.gov"
+                  placeholder="email@example.com"
                   onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
 
               {/* PASSWORD */}
               <div className="w-full mb-8">
-                <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 mb-2 block">Access Code</Label>
+                <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 mb-2 block">Password</Label>
                 <div className="relative">
                   <Input
                     type={show ? "text" : "password"}
@@ -165,7 +165,7 @@ export default function Login() {
                 disabled={loading}
                 className="w-full h-14 text-lg bg-amber-500 hover:bg-amber-600 text-white rounded-xl font-bold shadow-lg shadow-amber-200 transition-all active:scale-95"
               >
-                {loading ? "Authorizing..." : "Continue"} <FaChevronRight className="text-sm ml-2" />
+                {loading ? "Signing In..." : "Sign In"} <FaChevronRight className="text-sm ml-2" />
               </Button>
 
               <div className="w-full flex items-center gap-4 my-8">
@@ -203,7 +203,7 @@ export default function Login() {
               </div>
 
               <p className="mt-10 text-sm text-slate-500 font-medium">
-                Unauthorized? <Link href="/signup" className="text-amber-600 font-black hover:underline">Register Level</Link>
+                Unauthorized? <Link href="/signup" className="text-amber-600 font-black hover:underline">Sign Up</Link>
               </p>
             </>
           )}

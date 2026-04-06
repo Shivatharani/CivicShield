@@ -32,7 +32,7 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="w-full transition-all duration-500 px-6 py-8">
+    <nav className="w-full transition-all duration-500 px-6 pt-6 pb-2">
       <div className="max-w-7xl mx-auto glass-card-light flex justify-between items-center px-8 py-4 border-slate-200/50 rounded-2xl shadow-sm">
         <Link href="/" className="flex items-center gap-3 group">
           <div className="w-10 h-10 bg-amber-600 rounded-xl flex items-center justify-center text-white text-xl shadow-lg group-hover:scale-110 transition-transform">

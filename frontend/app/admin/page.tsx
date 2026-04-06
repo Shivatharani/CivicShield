@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useToast } from "../../context/ToastContext";
-import { FaPlay, FaPause, FaDownload, FaChartPie, FaWallet, FaHistory, FaUsers, FaShieldAlt, FaCircle, FaTerminal, FaDatabase } from "react-icons/fa";
+import { FaPlay, FaPause, FaDownload, FaChartPie, FaWallet, FaHistory, FaUsers, FaShieldAlt, FaCircle, FaTerminal, FaDatabase, FaWrench } from "react-icons/fa";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -95,9 +95,43 @@ export default function Admin() {
     }
   };
 
-  const downloadReport = () => {
+  const downloadReport = async () => {
+    const token = localStorage.getItem("token");
     showToast("Extracting Investigative Data...", "info");
-    window.open("http://localhost:5000/tamper-report");
+    
+    try {
+      const res = await axios.get("http://localhost:5000/tamper-report", {
+        headers: { Authorization: token },
+        responseType: "blob"
+      });
+
+      const url = window.URL.createObjectURL(new Blob([res.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "tamper_report.json");
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch {
+      showToast("Report Extraction Failed", "error");
+    }
+  };
+
+  const repairSystem = async () => {
+    const token = localStorage.getItem("token");
+    showToast("Initiating Cryptographic Repair...", "info");
+    
+    try {
+      await axios.post(
+        "http://localhost:5000/admin/repair-ledger",
+        {},
+        { headers: { Authorization: token } }
+      );
+      showToast("System Re-engaged & Integrity Restored", "success");
+      fetchData();
+    } catch {
+      showToast("Repair Operation Failed", "error");
+    }
   };
 
   if (!authorized) return null;
@@ -227,6 +261,17 @@ export default function Admin() {
                   >
                     <FaDownload className="text-[10px]" /> EXTRACT EVIDENCE
                   </Button>
+
+                  {data.systemStatus === "FROZEN" && (
+                    <Button
+                      variant="outline"
+                      onClick={repairSystem}
+                      disabled={role !== "OPERATOR"}
+                      className="w-full h-14 rounded-xl font-black text-xs flex items-center justify-center gap-3 bg-green-50 text-green-600 border-green-200 hover:bg-green-600 hover:text-white transition-all shadow-lg shadow-green-100 active:scale-95 border-2 animate-pulse"
+                    >
+                      <FaWrench className="text-[10px]" /> REPAIR & RE-ENGAGE
+                    </Button>
+                  )}
               </div>
             </div>
 

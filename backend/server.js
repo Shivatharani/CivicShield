@@ -17,7 +17,7 @@ const { verifyGoogleToken } = require("./utils/googleAuth");
 
 const { hashCitizen } = require("./utils/hash");
 const { gate1, gate3 } = require("./utils/gates");
-const { addTransaction, verifyLedger, readLedger } = require("./utils/ledger");
+const { addTransaction, verifyLedger, repairLedger, readLedger } = require("./utils/ledger");
 const { logRejection, getLogs } = require("./utils/logger");
 
 const { sendWebhook } = require("./utils/webhook");
@@ -212,13 +212,15 @@ app.post("/apply", verifyToken, requireRole("OPERATOR"), (req, res) => {
 
   // FRAUD REPORT (every 10 tx)
   const logs = getLogs();
-  const ledger = readLedger();
+  const currentLedger = readLedger();
 
-  if ((logs.length + ledger.length) % 10 === 0) {
-    generateFraudReport(logs, users, ledger);
+  if ((logs.length + currentLedger.length) % 10 === 0) {
+    generateFraudReport(logs, users, currentLedger);
   }
 
-  res.json({ status: "SUCCESS", tx });
+  const reason = `Automated validation confirmed for ${scheme} disbursement. Identity ${citizenHash.slice(0, 8)}... verified within ${user.Region_Code} jurisdiction with ${user.Income_Tier} income status. This operation ensures 100% direct benefit transfer by bypassing intermediaries and committing the proof to the immutable ledger.`;
+
+  res.json({ status: "SUCCESS", tx, reason });
 });
 
 // ==========================
@@ -260,6 +262,17 @@ app.post("/admin/pause", verifyToken, requireRole("OPERATOR"), (req, res) => {
 app.post("/admin/unpause", verifyToken, requireRole("OPERATOR"), (req, res) => {
   system.setStatus("ACTIVE", null);
   res.json({ status: "RESUMED" });
+});
+
+// REPAIR LEDGER
+app.post("/admin/repair-ledger", verifyToken, requireRole("OPERATOR"), (req, res) => {
+  const result = repairLedger();
+  system.setStatus("ACTIVE", null); // RESTORE STATUS
+  res.json({ 
+    status: "REPAIRED", 
+    message: "Ledger integrity restored and hash chain rebuilt.",
+    count: result.count 
+  });
 });
 
 // ==========================

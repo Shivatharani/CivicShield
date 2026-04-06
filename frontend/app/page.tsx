@@ -10,11 +10,20 @@ export default function Home() {
     <div className="flex flex-col items-center pb-20 bg-[#f8fafc] text-slate-900">
       
       {/* HERO SECTION */}
-      <section className="w-full relative px-6 py-32 md:py-48 flex flex-col items-center text-center overflow-hidden bg-white border-b border-slate-200">
+      <section className="w-full relative px-6 pt-16 pb-32 md:pt-20 md:pb-40 flex flex-col items-center text-center overflow-hidden bg-white border-b border-slate-200">
         <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-amber-50 blur-[100px] rounded-full opacity-60"></div>
         <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-indigo-50 blur-[100px] rounded-full opacity-60"></div>
 
         <div className="max-w-5xl z-10 animate-fade-in-up">
+          <div className="flex flex-col items-center mb-12 animate-fade-in group bg-white/50 backdrop-blur-sm p-8 rounded-[40px] border border-amber-50 shadow-2xl shadow-amber-100/20 brightness-110 hover:shadow-amber-300/30 transition-all">
+             <div className="w-20 h-20 bg-amber-600 rounded-[28px] flex items-center justify-center text-white text-4xl shadow-2xl shadow-amber-200 mb-6 group-hover:scale-105 transition-transform">
+                <FaShieldAlt />
+             </div>
+             <h2 className="text-2xl md:text-3xl font-black tracking-tighter text-slate-900">
+                Civic<span className="text-amber-600">Shield</span>
+             </h2>
+          </div>
+
           <div className="inline-flex items-center gap-2 px-4 py-1.5 mb-8 bg-amber-100 border border-amber-200 rounded-full text-[10px] font-bold uppercase tracking-[0.2em] text-amber-700">
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-500 opacity-75"></span>
@@ -23,12 +32,12 @@ export default function Home() {
             Next-Gen Governance Protocol
           </div>
           
-          <h1 className="text-5xl md:text-8xl font-black mb-8 leading-[0.95] tracking-tight text-slate-900">
+          <h1 className="text-5xl md:text-7xl font-black mb-8 leading-[1.1] tracking-tighter text-slate-900">
             Secure Wealth. <br />
             <span className="text-amber-600">Restore Trust.</span>
           </h1>
           
-          <p className="text-lg md:text-xl text-slate-500 mb-12 max-w-2xl mx-auto leading-relaxed font-medium">
+          <p className="text-base md:text-lg text-slate-500 mb-12 max-w-2xl mx-auto leading-relaxed font-medium">
             CivicShield is a high-integrity welfare distribution engine powered by 
             cryptographic proofs and automated fraud detection.
           </p>
@@ -59,8 +68,8 @@ export default function Home() {
       {/* CORE FEATURES (6-CARD GRID) */}
       <section className="max-w-7xl w-full px-6 py-24">
         <div className="text-center mb-16">
-           <h2 className="text-3xl md:text-4xl font-black mb-4">Institutional Core Features</h2>
-           <p className="text-slate-500 font-medium max-w-xl mx-auto">Built on the principles of immutability and radical transparency.</p>
+           <h2 className="text-2xl md:text-3xl font-black mb-4">Institutional Core Features</h2>
+           <p className="text-slate-500 font-medium max-w-xl mx-auto text-sm">Built on the principles of immutability and radical transparency.</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -133,7 +142,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
             <div>
-              <h2 className="text-4xl md:text-5xl font-black mb-8 leading-tight">
+              <h2 className="text-3xl md:text-4xl font-black mb-8 leading-tight">
                 Empowering Governance <br />
                 <span className="text-amber-600">In the Real World.</span>
               </h2>
@@ -216,7 +225,7 @@ export default function Home() {
 
       {/* FINAL CTA */}
       <section className="w-full py-32 px-6 flex flex-col items-center text-center">
-         <h2 className="text-4xl md:text-6xl font-black mb-8 leading-tight">Ready to Secure <br /> the Public Fund?</h2>
+         <h2 className="text-3xl md:text-5xl font-black mb-8 leading-tight">Ready to Secure <br /> the Public Fund?</h2>
          <p className="text-slate-500 text-lg font-medium mb-12 max-w-xl">Join the elite network of transparency operators and citizens.</p>
          <Link 
            href="/signup" 

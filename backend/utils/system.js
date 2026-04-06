@@ -1,58 +1,12 @@
-let status = "ACTIVE";
-let budget = 1000000;
-
-let freezeReason = null;
-
-// ==========================
-// STATUS
-// ==========================
-function getStatus() {
-  return status;
-}
-
-function setStatus(newStatus, reason = null) {
-  status = newStatus;
-  freezeReason = reason;
-
-  if (newStatus === "FROZEN") {
-    logFreeze(reason); // ✅ ADD THIS
-  }
-
-  console.log(
-    `SYSTEM STATUS → ${newStatus} | Reason: ${reason}`
-  );
-}
-
-
-function getFreezeReason() {
-  return freezeReason;
-}
-
-// ==========================
-// BUDGET
-// ==========================
-function getBudget() {
-  return budget;
-}
-
-function deductBudget(amount) {
-  budget -= amount;
-
-  // 💰 AUTO FREEZE ON ZERO
-  if (budget === 0) {
-    setStatus("FROZEN", "BUDGET_EXHAUSTED");
-  }
-}
-
-function resetSystem() {
-  status = "ACTIVE";
-  freezeReason = null;
-  budget = 1000000;
-}
-
-
 const fs = require("fs");
 
+let status = "ACTIVE";
+let freezeReason = null;
+let budget = 1000000;
+
+// ==========================
+// 📝 LOG FREEZE
+// ==========================
 function logFreeze(reason) {
   let logs = [];
 
@@ -68,11 +22,51 @@ function logFreeze(reason) {
   fs.writeFileSync("freezeLog.json", JSON.stringify(logs, null, 2));
 }
 
+// ==========================
+// 🔐 STATUS
+// ==========================
+function getStatus() {
+  return status;
+}
+
+function setStatus(newStatus, reason = null) {
+  status = newStatus;
+  freezeReason = reason;
+
+  if (
+    newStatus === "FROZEN" ||
+    newStatus === "PAUSED" ||
+    newStatus === "BUDGET_EXHAUSTED"
+  ) {
+    logFreeze(reason);
+  }
+
+  console.log("SYSTEM:", status, "| Reason:", reason);
+}
+
+function getFreezeReason() {
+  return freezeReason;
+}
+
+// ==========================
+// 💰 BUDGET
+// ==========================
+function getBudget() {
+  return budget;
+}
+
+function deductBudget(amount) {
+  budget -= amount;
+
+  if (budget === 0) {
+    setStatus("BUDGET_EXHAUSTED", "BUDGET_EXHAUSTED");
+  }
+}
+
 module.exports = {
   getStatus,
   setStatus,
   getFreezeReason,
   getBudget,
-  deductBudget,
-  resetSystem
+  deductBudget
 };

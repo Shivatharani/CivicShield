@@ -1,24 +1,34 @@
+"use client";
+
 import "./globals.css";
 import Link from "next/link";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: any) {
   return (
     <html lang="en">
-      <body className="bg-gray-50">
-        <nav className="bg-blue-600 text-white p-4 flex justify-between">
-          <h1 className="font-bold">CivicShield</h1>
+      <body>
 
-          <div>
-            <Link href="/" className="mr-4">Home</Link>
-            <Link href="/admin">Dashboard</Link>
+        {/* ✅ GOOGLE PROVIDER WRAP */}
+        <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!}>
+
+          {/* NAVBAR */}
+          <div className="bg-blue-600 text-white p-4 flex justify-between">
+            <h1 className="font-bold">CivicShield</h1>
+
+            <div className="space-x-4">
+              <Link href="/">Home</Link>
+              <Link href="/login">Login</Link>
+              <Link href="/signup">Signup</Link>
+              <Link href="/apply">Apply</Link>
+              <Link href="/admin">Dashboard</Link>
+            </div>
           </div>
-        </nav>
 
-        {children}
+          {children}
+
+        </GoogleOAuthProvider>
+
       </body>
     </html>
   );

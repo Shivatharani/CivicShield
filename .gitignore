@@ -39,4 +39,6 @@ coverage/
 
 # Backend specific
 backend/ledger.json
+backend/logs.json
+backend/freezeLog.json
 backend/data.csv.tmp

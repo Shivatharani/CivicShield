@@ -78,8 +78,7 @@ app.post("/login", async (req, res) => {
   if (!match) return res.status(401).json({ error: "Invalid" });
 
   const token = generateToken(user);
-
-  res.json({ token });
+  res.json({ token, role: user.role });
 });
 
 // GOOGLE LOGIN
@@ -94,7 +93,7 @@ app.post("/google-login", async (req, res) => {
       role: "VIEWER"
     });
 
-    res.json({ token });
+    res.json({ token, role: "VIEWER" });
 
   } catch {
     res.status(401).json({ error: "Invalid Google token" });
@@ -142,7 +141,7 @@ function freezeSystem(reason) {
 // ==========================
 // APPLY API
 // ==========================
-app.post("/apply", verifyToken, (req, res) => {
+app.post("/apply", verifyToken, requireRole("OPERATOR"), (req, res) => {
 
   if (system.getStatus() !== "ACTIVE") {
     return res.json({

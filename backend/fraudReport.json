@@ -1,0 +1,51 @@
+{
+  "timestamp": "2026-04-06T08:20:58.216Z",
+  "mostCommonRejection": "REPLAY_DETECTED",
+  "topCitizens": [
+    {
+      "Citizen_ID": "422601586768",
+      "Income_Tier": "Low",
+      "Scheme_Eligibility": "Pension",
+      "Scheme_Amount": "2000",
+      "Last_Claim_Date": "11-01-2025",
+      "Region_Code": "WB-03",
+      "Account_Status": "Active",
+      "Aadhaar_Linked": "TRUE",
+      "Claim_Count": "5"
+    },
+    {
+      "Citizen_ID": "534927166137",
+      "Income_Tier": "Low",
+      "Scheme_Eligibility": "Pension",
+      "Scheme_Amount": "2000",
+      "Last_Claim_Date": "06-04-2025",
+      "Region_Code": "WB-02",
+      "Account_Status": "Active",
+      "Aadhaar_Linked": "TRUE",
+      "Claim_Count": "5"
+    },
+    {
+      "Citizen_ID": "630527636236",
+      "Income_Tier": "Low",
+      "Scheme_Eligibility": "Pension",
+      "Scheme_Amount": "2000",
+      "Last_Claim_Date": "22-01-2026",
+      "Region_Code": "AP-12",
+      "Account_Status": "Active",
+      "Aadhaar_Linked": "TRUE",
+      "Claim_Count": "5"
+    }
+  ],
+  "budgetByRegion": {
+    "MP-11": 2000,
+    "GJ-06": 6000,
+    "DL-03": 2000,
+    "RJ-11": 16000,
+    "TN-09": 5000,
+    "UP-03": 5000,
+    "UP-10": 1000,
+    "TN-17": 5000,
+    "TN-16": 5000,
+    "WB-09": 5000
+  }
+}

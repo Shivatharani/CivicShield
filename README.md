@@ -1,117 +1,98 @@
 # CivicShield 🛡️
 
-**CivicShield** is a secure, transparent, and high-integrity system for managing citizen scheme applications. It features multi-gate validation, real-time budget tracking, and a blockchain-inspired transaction ledger to ensure fairness and prevent fraud.
+**CivicShield** is a secure, transparent, and high-integrity platform for managing citizen scheme applications. Featuring a blockchain-backed transaction ledger, multi-gate validation, and a modern "Pastry" themed UI, it ensures fairness, prevents fraud, and provides a premium experience for both citizens and administrators.
 
 ---
 
 ## 🚀 Project Overview
 
-The project is divided into two main components:
-- **`backend/`**: A Node.js and Express-based server that handles application logic, security gates, and the transaction ledger.
-- **`frontend/`**: A modern Next.js application providing a fast and intuitive interface for both citizens and administrators.
+The project is architected with a robust separation of concerns:
+- **`backend/`**: A Node.js/Express server implementing security gates, JWT authentication, RBAC, and a cryptographic linked-list ledger.
+- **`frontend/`**: A Next.js application with a soft, premium aesthetic, real-time toast notifications, and role-based route protection.
 
 ---
 
 ## ✨ Key Features
 
-1.  **Multi-Gate Validation System**:
-    - **Gate 1**: Eligibility check based on citizen profile (Income Tier, Region Code).
-    - **Gate 2**: Real-time budget availability check.
-    - **Gate 3**: Frequency monitoring (limitations on how often a citizen can claim a scheme).
-2.  **Anti-Fraud Mechanisms**:
-    - **Replay Protection**: Prevents duplicate submissions within short durations.
-    - **Hash-Based Privacy**: Citizen IDs are hashed (SHA-256) before storage in the ledger for privacy.
-3.  **High-Integrity Ledger**:
-    - A blockchain-inspired ledger where each transaction is linked to the previous one using a cryptographic hash.
-    - Automatic system freeze if tampering is detected.
-4.  **Admin Dashboard**:
-    - Real-time monitoring of system status (Active, Paused, Frozen).
-    - Live budget tracking and transaction history.
-    - Remote system control (Pause/Resume capability).
+1.  **Role-Based Access Control (RBAC)**:
+    - **VIEWER**: Read-only access to the dashboard and registries.
+    - **OPERATOR**: Full administrative control, including pausing/resuming the system, downloading tamper reports, and processing applications.
+2.  **Premium UI & Aesthetics**:
+    - **Pastry Palette**: A custom-designed desktop experience featuring soft pastel colors (Cream, Mint, Blush).
+    - **Toast Notifications**: Real-time interactive feedback for all user actions (Login, Signup, Admin Controls).
+3.  **Cross-Gate Validation**:
+    - **Gate 1**: Eligibility cross-referencing with citizen datasets.
+    - **Gate 2**: Automated budget exhaustion checks.
+    - **Gate 3**: Frequency monitoring to prevent over-claiming.
+4.  **Security & Integrity**:
+    - **Blockchain Ledger**: Immutable linked-list storage for all transactions.
+    - **Anti-Fraud**: Replay protection and identity hashing (SHA-256).
+    - **Google OAuth**: Integrated secure login via Google.
 
 ---
 
 ## 🛠️ Tech Stack
 
-- **Backend**: Node.js, [Express.js](https://expressjs.com/), `csv-parser`, `cors`.
-- **Frontend**: [Next.js](https://nextjs.org/), React 19, [Tailwind CSS](https://tailwindcss.com/), TypeScript, Axios.
+- **Backend**: Node.js, Express, MongoDB (Mongoose), JWT, BcryptJS.
+- **Frontend**: Next.js 16 (Turbopack), React 19, Tailwind CSS, Google OAuth, Axios.
 
 ---
 
 ## ⚙️ Setup and Installation
 
 ### Prerequisites
-- [Node.js](https://nodejs.org/) (v18 or higher)
-- [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/)
+- [Node.js](https://nodejs.org/) (v18+)
+- [MongoDB](https://www.mongodb.com/) (Local or Atlas)
 
-### 1. Backend Setup
+### 1. Environment Configuration
+Create a `.env` file in both `backend/` and `frontend/` directories:
+```env
+MONGO_URI=mongodb://localhost:27017/civicshield
+JWT_SECRET=YOUR_SECRET
+NEXT_PUBLIC_GOOGLE_CLIENT_ID=YOUR_GOOGLE_ID
+```
+
+### 2. Backend Installation
 ```bash
 cd backend
 npm install
 npm start
 ```
-*The server will start on `http://localhost:5000`.*
+*Server running on `http://localhost:5000`.*
 
-### 2. Frontend Setup
+### 3. Frontend Installation
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
-*The application will be available at `http://localhost:3000`.*
+*Application available at `http://localhost:3000`.*
 
 ---
 
 ## 🔌 API Endpoints
 
-### Citizen APIs
+### 🔐 Authentication
+- `POST /signup`: Register as a VIEWER or OPERATOR.
+- `POST /login`: Standard JWT authentication.
+- `POST /google-login`: One-click secure login with Google.
 
-#### `POST /apply`
-Submits a new scheme application.
-- **Request Body**:
-  ```json
-  {
-    "id": "CITIZEN_ID",
-    "scheme": "SCHEME_NAME",
-    "amount": 5000,
-    "incomeTier": "Tier 1",
-    "regionCode": "REG_001"
-  }
-  ```
-- **Responses**:
-  - `SUCCESS`: Transaction added and ledger updated.
-  - `SYSTEM_FROZEN`: System is inactive due to tampering or policy.
-  - `REPLAY_DETECTED`: Prevented duplicate submission.
-  - `LOCKED`: Validation gate failed.
+### 📜 Citizen Features (Authorized Users)
+- `POST /apply`: Submit a scheme application (Role: OPERATOR).
 
-### Admin APIs
-
-#### `GET /dashboard`
-Returns the current system state.
-- **Response**:
-  ```json
-  {
-    "status": "ACTIVE",
-    "budget": 950000,
-    "transactions": [...]
-  }
-  ```
-
-#### `POST /pause`
-Freezes the system to prevent new applications.
-
-#### `POST /resume`
-Resumes the system if it was manually paused.
+### 📊 Admin Intelligence
+- `GET /dashboard`: Real-time system monitoring.
+- `POST /admin/pause`: Emergency system freeze (Role: OPERATOR).
+- `POST /admin/unpause`: System restoration (Role: OPERATOR).
+- `GET /tamper-report`: Detailed audit log (Role: OPERATOR).
 
 ---
 
-## 🛡️ Security and Integrity
+## 🛡️ System Integrity
 
-CivicShield maintains transaction integrity by:
-1.  **Hashing**: Using `crypto` for SHA-256 hashing of citizen data and transaction blocks.
-2.  **Verification**: Every new transaction triggers a full ledger verification. If any block's hash doesn't match its contents or its link to the previous block, the system automatically enters a `FROZEN` state.
+CivicShield monitors itself constantly. If the cryptographic chain in the `ledger.json` is broken or if data is modified externally, the system enters a **FROZEN** state, immediately alerting all administrators and halting further transactions.
 
 ---
 
 ## 📄 License
-This project is licensed under the ISC License.
+Licensed under the ISC License.

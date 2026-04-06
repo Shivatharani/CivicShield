@@ -182,5 +182,29 @@
     "reason": "Claim_Count = 5",
     "extra": "",
     "timestamp": "2026-04-06T07:36:12.291Z"
+  },
+  {
+    "type": "REJECTED",
+    "citizenHash": "6eead1c9a98f8ce9a5ec6a8774cdce9d9228f0587a52e0132492be427ac2205c",
+    "gate": 1,
+    "reason": "Citizen_ID = NOT_FOUND",
+    "extra": "",
+    "timestamp": "2026-04-06T08:07:11.071Z"
+  },
+  {
+    "type": "REJECTED",
+    "citizenHash": "b7aa140b096e2c3fd2b58f1d73a6334963cc568f439b8e6bd476943096c3ee55",
+    "gate": 1,
+    "reason": "Claim_Count = 5",
+    "extra": "",
+    "timestamp": "2026-04-06T08:19:41.965Z"
+  },
+  {
+    "type": "REJECTED",
+    "citizenHash": "3b5220fbc345ca898e92eedc03e691f0cde71ebb579695d66da67c119230989b",
+    "gate": 3,
+    "reason": "FREQUENCY_VIOLATION",
+    "extra": "",
+    "timestamp": "2026-04-06T08:20:18.265Z"
   }
 ]

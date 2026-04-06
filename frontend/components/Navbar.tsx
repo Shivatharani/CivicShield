@@ -51,10 +51,9 @@ export default function Navbar() {
               <div className="h-4 w-[1px] bg-slate-200 mx-2"></div>
               <button 
                 onClick={logout}
-                className="flex items-center gap-2 text-red-500 hover:text-red-600 transition-colors"
-                title="Logout"
+                className="ml-4 bg-rose-50 border border-rose-100 text-rose-600 hover:bg-rose-600 hover:text-white transition-all text-[10px] font-black uppercase tracking-widest py-2 px-4 rounded-lg shadow-sm active:scale-95"
               >
-                <FaPowerOff className="text-sm" />
+                Logout
               </button>
             </>
           ) : (

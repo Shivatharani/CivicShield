@@ -240,6 +240,24 @@ app.get("/dashboard", verifyToken, (req, res) => {
 
   const last10 = [...ledger.slice(-10)].reverse();
 
+  // Stats for Charts
+  const integrityStats = [
+    { name: "Approved", value: approved },
+    { name: "Rejected", value: rejected }
+  ];
+
+  const rejectionBreakdown = logs.reduce((acc, log) => {
+    acc[log.reason] = (acc[log.reason] || 0) + 1;
+    return acc;
+  }, {});
+
+  const rejectionStats = Object.keys(rejectionBreakdown).map(reason => ({
+    reason,
+    count: rejectionBreakdown[reason]
+  }));
+
+  console.log(`📊 Dashboard Sync: Ledger=${ledger.length} Logs=${logs.length} Registry=${users.length}`);
+
   res.json({
     systemStatus: system.getStatus(),
     freezeReason: system.getFreezeReason(),
@@ -247,7 +265,9 @@ app.get("/dashboard", verifyToken, (req, res) => {
     totalTransactions: total,
     approvalRate,
     last10,
-    registry: users
+    registry: users,
+    integrityStats,
+    rejectionStats
   });
 });
 

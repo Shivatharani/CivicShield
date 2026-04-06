@@ -3,14 +3,13 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useToast } from "../../context/ToastContext";
-import { FaPlay, FaPause, FaDownload, FaChartPie, FaWallet, FaHistory, FaUsers, FaShieldAlt, FaCircle, FaTerminal, FaDatabase, FaWrench } from "react-icons/fa";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { FaPlay, FaPause, FaDownload, FaChartPie, FaWallet, FaHistory, FaUsers, FaShieldAlt, FaCircle, FaTerminal, FaDatabase, FaWrench, FaSearch, FaSortAmountDown, FaSortAmountUp } from "react-icons/fa";
+import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, CartesianGrid } from 'recharts';
+import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
@@ -20,6 +19,9 @@ import {
 export default function Admin() {
   const [data, setData] = useState<any>({});
   const [authorized, setAuthorized] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortDescending, setSortDescending] = useState(true);
   const { showToast } = useToast();
 
   const fetchData = async () => {
@@ -34,15 +36,9 @@ export default function Admin() {
     }
 
     try {
-      const res = await axios.get(
-        "http://localhost:5000/dashboard",
-        {
-          headers: {
-            Authorization: token,
-          },
-        }
-      );
-
+      const res = await axios.get("http://localhost:5000/dashboard", {
+        headers: { Authorization: token },
+      });
       setData(res.data);
       setAuthorized(true);
     } catch (err) {
@@ -56,6 +52,7 @@ export default function Admin() {
   };
 
   useEffect(() => {
+    setIsMounted(true);
     fetchData();
     const interval = setInterval(fetchData, 5000); 
     return () => clearInterval(interval);
@@ -64,13 +61,7 @@ export default function Admin() {
   const pause = async () => {
     const token = localStorage.getItem("token");
     try {
-      await axios.post(
-        "http://localhost:5000/admin/pause",
-        {},
-        {
-          headers: { Authorization: token },
-        }
-      );
+      await axios.post("http://localhost:5000/admin/pause", {}, { headers: { Authorization: token } });
       showToast("Operational Halt Executed", "success");
       fetchData();
     } catch {
@@ -81,13 +72,7 @@ export default function Admin() {
   const resume = async () => {
     const token = localStorage.getItem("token");
     try {
-      await axios.post(
-        "http://localhost:5000/admin/unpause",
-        {},
-        {
-          headers: { Authorization: token },
-        }
-      );
+      await axios.post("http://localhost:5000/admin/unpause", {}, { headers: { Authorization: token } });
       showToast("System Re-engaged Successfully", "success");
       fetchData();
     } catch {
@@ -98,13 +83,11 @@ export default function Admin() {
   const downloadReport = async () => {
     const token = localStorage.getItem("token");
     showToast("Extracting Investigative Data...", "info");
-    
     try {
       const res = await axios.get("http://localhost:5000/tamper-report", {
         headers: { Authorization: token },
         responseType: "blob"
       });
-
       const url = window.URL.createObjectURL(new Blob([res.data]));
       const link = document.createElement("a");
       link.href = url;
@@ -120,13 +103,8 @@ export default function Admin() {
   const repairSystem = async () => {
     const token = localStorage.getItem("token");
     showToast("Initiating Cryptographic Repair...", "info");
-    
     try {
-      await axios.post(
-        "http://localhost:5000/admin/repair-ledger",
-        {},
-        { headers: { Authorization: token } }
-      );
+      await axios.post("http://localhost:5000/admin/repair-ledger", {}, { headers: { Authorization: token } });
       showToast("System Re-engaged & Integrity Restored", "success");
       fetchData();
     } catch {
@@ -135,15 +113,14 @@ export default function Admin() {
   };
 
   if (!authorized) return null;
-
   const role = typeof window !== "undefined" ? localStorage.getItem("role") : null;
 
   return (
-    <div className="flex flex-col items-center py-12 min-h-screen bg-[#f8fafc] text-slate-900 px-6 relative">
-      
-      <div className="max-w-7xl w-full z-10 animate-fade-in-up mt-16">
+    <div className="min-h-screen bg-[#f8fafc] text-slate-900 pb-20 px-8 lg:px-16 pt-28">
+      <div className="w-full max-w-[1750px] mx-auto space-y-12 animate-fade-in">
         
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-6">
+        {/* HEADER */}
+        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8">
           <div>
             <div className="flex items-center gap-3 mb-2">
                <div className="w-10 h-10 bg-amber-600 rounded-xl flex items-center justify-center text-white shadow-lg">
@@ -156,35 +133,26 @@ export default function Admin() {
 
           <div className="flex items-center gap-4">
             <div className={`bg-white border px-5 py-2.5 flex items-center gap-3 rounded-xl shadow-sm ${
-              data.systemStatus === "ACTIVE" 
-                ? "border-green-100 ring-4 ring-green-50" 
-                : "border-red-100 ring-4 ring-red-50"
+              data.systemStatus === "ACTIVE" ? "border-green-100 ring-4 ring-green-50" : "border-red-100 ring-4 ring-red-50"
             }`}>
               <div className="relative flex h-2.5 w-2.5">
-                <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
-                   data.systemStatus === "ACTIVE" ? "bg-green-500" : "bg-red-500"
-                }`}></span>
-                <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${
-                   data.systemStatus === "ACTIVE" ? "bg-green-500" : "bg-red-500"
-                }`}></span>
+                <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${data.systemStatus === "ACTIVE" ? "bg-green-500" : "bg-red-500"}`}></span>
+                <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${data.systemStatus === "ACTIVE" ? "bg-green-500" : "bg-red-500"}`}></span>
               </div>
               <span className="text-[10px] font-black uppercase tracking-[0.2em]">{data.systemStatus || "SYNCHRONIZING..."}</span>
             </div>
-
             {data.freezeReason && (
               <div className="bg-red-600 px-5 py-2.5 rounded-xl flex items-center gap-3 shadow-lg shadow-red-200">
                  <FaCircle className="text-white text-[8px] animate-pulse" />
-                 <span className="text-[10px] font-black text-white uppercase tracking-widest leading-none">
-                    ALERT: {data.freezeReason}
-                 </span>
+                 <span className="text-[10px] font-black text-white uppercase tracking-widest leading-none">ALERT: {data.freezeReason}</span>
               </div>
             )}
           </div>
         </div>
 
-        {/* TOP STATS CARDS */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-          <Card className="p-8 flex flex-col justify-between group bg-white border-2 border-amber-100 hover:border-amber-400 transition-all rounded-[24px]">
+        {/* STATS */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <Card className="p-8 flex flex-col justify-between group bg-white border-2 border-slate-50 hover:border-amber-400 transition-all rounded-[32px] shadow-sm">
             <div className="flex justify-between items-start mb-10">
               <div className="w-12 h-12 bg-amber-50 rounded-2xl flex items-center justify-center border border-amber-100 group-hover:bg-amber-600 group-hover:text-white transition-all shadow-sm">
                 <FaWallet className="text-amber-600 group-hover:text-white text-xl" />
@@ -197,7 +165,7 @@ export default function Admin() {
             </div>
           </Card>
 
-          <Card className="p-8 flex flex-col justify-between group bg-white border-2 border-amber-100 hover:border-amber-400 transition-all rounded-[24px]">
+          <Card className="p-8 flex flex-col justify-between group bg-white border-2 border-slate-50 hover:border-amber-400 transition-all rounded-[32px] shadow-sm">
             <div className="flex justify-between items-start mb-10">
               <div className="w-12 h-12 bg-amber-50 rounded-2xl flex items-center justify-center border border-amber-100 group-hover:bg-amber-600 group-hover:text-white transition-all shadow-sm">
                 <FaDatabase className="text-amber-600 group-hover:text-white text-xl" />
@@ -210,7 +178,7 @@ export default function Admin() {
             </div>
           </Card>
 
-          <Card className="p-8 flex flex-col justify-between group bg-white border-2 border-amber-100 hover:border-amber-400 transition-all rounded-[24px]">
+          <Card className="p-8 flex flex-col justify-between group bg-white border-2 border-slate-50 hover:border-amber-400 transition-all rounded-[32px] shadow-sm">
             <div className="flex justify-between items-start mb-10">
               <div className="w-12 h-12 bg-amber-50 rounded-2xl flex items-center justify-center border border-amber-100 group-hover:bg-amber-600 group-hover:text-white transition-all shadow-sm">
                 <FaChartPie className="text-amber-600 group-hover:text-white text-xl" />
@@ -224,149 +192,133 @@ export default function Admin() {
           </Card>
         </div>
 
-        {/* CONTROLS & TABLES */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          
-          {/* ACTIONS (Left Sidebar) */}
-          <div className="lg:col-span-1 space-y-8">
-            <div className="premium-card p-8 bg-white border-2 border-slate-50">
-              <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-8 flex items-center gap-2">
-                SYSTEM AUTHORITY {role !== "OPERATOR" && <span className="text-[8px] bg-red-50 text-red-600 px-2.5 py-1 rounded-md border border-red-100">RESTRICTED</span>}
-              </h3>
-              
-              <div className="flex flex-col gap-4">
-                  <Button
-                    variant="outline"
-                    onClick={pause}
-                    disabled={role !== "OPERATOR" || data.systemStatus === "PAUSED"}
-                    className="w-full h-14 rounded-xl font-black text-xs flex items-center justify-center gap-3 bg-red-50 text-red-600 border-red-200 hover:bg-red-600 hover:text-white transition-all shadow-sm active:scale-95"
-                  >
-                    <FaPause className="text-[10px]" /> EMERGENCY HALT
-                  </Button>
-
-                  <Button
-                    variant="outline"
-                    onClick={resume}
-                    disabled={role !== "OPERATOR" || data.systemStatus !== "PAUSED"}
-                    className="w-full h-14 rounded-xl font-black text-xs flex items-center justify-center gap-3 bg-amber-50 text-amber-600 border-amber-200 hover:bg-amber-600 hover:text-white transition-all shadow-sm active:scale-95"
-                  >
-                    <FaPlay className="text-[10px]" /> RESUME OPERATIONS
-                  </Button>
-
-                  <Button
-                    variant="outline"
-                    onClick={downloadReport}
-                    disabled={role !== "OPERATOR" || data.systemStatus !== "FROZEN"}
-                    className="w-full h-14 rounded-xl font-black text-xs flex items-center justify-center gap-3 bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-900 hover:text-white transition-all shadow-sm active:scale-95"
-                  >
-                    <FaDownload className="text-[10px]" /> EXTRACT EVIDENCE
-                  </Button>
-
-                  {data.systemStatus === "FROZEN" && (
-                    <Button
-                      variant="outline"
-                      onClick={repairSystem}
-                      disabled={role !== "OPERATOR"}
-                      className="w-full h-14 rounded-xl font-black text-xs flex items-center justify-center gap-3 bg-green-50 text-green-600 border-green-200 hover:bg-green-600 hover:text-white transition-all shadow-lg shadow-green-100 active:scale-95 border-2 animate-pulse"
-                    >
-                      <FaWrench className="text-[10px]" /> REPAIR & RE-ENGAGE
-                    </Button>
-                  )}
-              </div>
-            </div>
-
-            <Card className="p-8 bg-amber-100 border-2 border-amber-200 shadow-xl rounded-[24px]">
-              <h3 className="text-[10px] font-black text-amber-800 uppercase tracking-[0.2em] mb-6">
-                CLEARED IDENTITY
-              </h3>
-              <div className="bg-white/40 p-5 rounded-2xl border border-white group hover:border-amber-500/50 transition-all">
-                <div className="flex items-center gap-4 mb-3">
-                   <div className="w-10 h-10 bg-amber-600 rounded-xl flex items-center justify-center text-white shadow-lg">
-                      <FaUsers />
-                   </div>
-                   <div>
-                      <p className="text-sm font-black text-slate-900 uppercase tracking-tight">{role || "GUEST"}</p>
-                      <p className="text-[9px] text-amber-700 font-bold uppercase tracking-widest mt-0.5">Permissions Level</p>
-                   </div>
-                </div>
-                <div className="w-full h-1.5 bg-amber-200 rounded-full overflow-hidden mt-4">
-                   <div className={`h-full bg-amber-600 shadow-[0_0_8px_rgba(217,119,6,0.6)] transition-all duration-1000 ${role === "OPERATOR" ? "w-full" : "w-1/3"}`}></div>
-                </div>
-              </div>
-            </Card>
-          </div>
-
-          {/* TABLES (Right Side) */}
-          <div className="lg:col-span-2 space-y-8">
-            
-            <Card className="p-8 bg-white border-2 border-amber-50 rounded-[24px]">
-              <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-8">REAL-TIME LEDGER FEED</h3>
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow className="text-slate-400 text-[10px] font-black uppercase tracking-widest border-b border-amber-50 mx-[-32px]">
-                      <TableHead className="pb-5 text-slate-400">HASH_KEY</TableHead>
-                      <TableHead className="pb-5 text-slate-400">SCHEME</TableHead>
-                      <TableHead className="pb-5 text-slate-400">AMOUNT</TableHead>
-                      <TableHead className="pb-5 text-right text-slate-400">VERIFICATION</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {data.last10?.map((tx: any, i: number) => (
-                      <TableRow key={i} className="group hover:bg-amber-50/50 transition-colors border-amber-50">
-                        <TableCell className="py-5 font-mono text-[10px] text-slate-400 group-hover:text-amber-600">{tx.CitizenHash?.slice(0, 16)}...</TableCell>
-                        <TableCell className="py-5 font-black text-slate-900 group-hover:text-amber-600 text-[10px] uppercase">{tx.Scheme}</TableCell>
-                        <TableCell className="py-5 font-black text-slate-900 text-lg">₹{tx.Amount}</TableCell>
-                        <TableCell className="py-5 text-right">
-                          <span className={`px-3 py-1 rounded-full text-[9px] font-black tracking-widest border ${
-                            tx.status === "SUCCESS" 
-                            ? "bg-green-50 text-green-600 border-green-100" 
-                            : "bg-red-50 text-red-600 border-red-100"
-                          }`}>
-                            {tx.status}
-                          </span>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                    {!data.last10?.length && (
-                      <TableRow>
-                        <TableCell colSpan={4} className="py-12 text-center text-slate-300 font-bold italic text-sm">No synchronized entries found.</TableCell>
-                      </TableRow>
-                    )}
-                  </TableBody>
-                </Table>
-              </div>
-            </Card>
-
-            <Card className="p-8 bg-white border-2 border-amber-50 rounded-[24px]">
-              <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-8">CITIZEN REGISTRY</h3>
-              <div className="max-h-64 overflow-auto space-y-4 pr-3 custom-scrollbar">
-                {data.registry?.map((u: any, i: number) => (
-                  <div key={i} className="bg-amber-50/30 p-5 rounded-2xl flex justify-between items-center border border-transparent hover:border-amber-200 hover:bg-white transition-all group">
-                    <div className="flex items-center gap-4">
-                       <div className="w-10 h-10 rounded-full bg-white border border-amber-100 flex items-center justify-center font-black text-[10px] text-slate-400 group-hover:text-amber-600 transition-all shadow-sm">
-                          {i + 1}
-                       </div>
-                       <div>
-                          <p className="text-xs font-black text-slate-900 tracking-widest group-hover:text-amber-600 transition-all">{u.Citizen_ID}</p>
-                          <p className="text-[9px] text-slate-400 font-black uppercase tracking-widest mt-1">CLAIMS: {u.Claim_Count}</p>
-                       </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-[8px] text-amber-600 font-black uppercase tracking-widest mb-1">LAST_ACTIVITY</p>
-                      <p className="text-[10px] font-black text-slate-900">{u.Last_Claim_Date || "N/A"}</p>
-                    </div>
+        {/* CHARTS */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <Card className="p-8 bg-white border-2 border-slate-50 rounded-[32px] shadow-sm">
+              <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-8">System Integrity Overview</h3>
+              <div className="h-[300px] w-full flex items-center justify-center">
+                {isMounted && (data.integrityStats?.some((s: any) => s.value > 0) ? (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie data={data.integrityStats || []} cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={5} dataKey="value">
+                        {data.integrityStats?.map((entry: any, index: number) => (
+                          <Cell key={`cell-${index}`} fill={index === 0 ? "#10b981" : "#ef4444"} />
+                        ))}
+                      </Pie>
+                      <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} />
+                      <Legend iconType="circle" />
+                    </PieChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div className="text-center">
+                    <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-slate-100 text-slate-300 font-black italic">?</div>
+                    <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest">No Integrity Data Logged</p>
                   </div>
                 ))}
               </div>
             </Card>
 
+            <Card className="p-8 bg-white border-2 border-slate-50 rounded-[32px] shadow-sm">
+              <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-8">Risk Analysis Breakdown</h3>
+              <div className="h-[300px] w-full flex items-center justify-center">
+                {isMounted && (data.rejectionStats?.length > 0 ? (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={data.rejectionStats || []}>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                      <XAxis dataKey="reason" axisLine={false} tickLine={false} tick={{ fontSize: 9, fontWeight: 700, fill: '#94a3b8' }} />
+                      <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 9, fill: '#94a3b8' }} />
+                      <Tooltip cursor={{ fill: '#f8fafc' }} contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} />
+                      <Bar dataKey="count" fill="#d97706" radius={[4, 4, 0, 0]} barSize={30} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div className="text-center">
+                    <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-slate-100 text-slate-300 font-black italic">✓</div>
+                    <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest">No Risk Factors Detected</p>
+                  </div>
+                ))}
+              </div>
+            </Card>
+        </div>
+
+        {/* MAIN GRID */}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+          <div className="lg:col-span-1 space-y-8">
+            <Card className="p-8 bg-white border-2 border-slate-50 rounded-[32px] shadow-sm">
+              <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-8">SYSTEM AUTHORITY</h3>
+              <div className="flex flex-col gap-4">
+                  <Button variant="outline" onClick={pause} disabled={role !== "OPERATOR" || data.systemStatus === "PAUSED"} className="w-full h-14 rounded-2xl font-black text-[10px] bg-red-50 text-red-600 border-red-100 hover:bg-red-600 hover:text-white transition-all shadow-sm"><FaPause className="mr-2" /> EMERGENCY HALT</Button>
+                  <Button variant="outline" onClick={resume} disabled={role !== "OPERATOR" || data.systemStatus === "ACTIVE"} className="w-full h-14 rounded-2xl font-black text-[10px] bg-green-50 text-green-600 border-green-100 hover:bg-green-600 hover:text-white transition-all shadow-sm"><FaPlay className="mr-2" /> SYSTEM RESUME</Button>
+                  {data.systemStatus === "TAMPERED" && (
+                    <Button variant="outline" onClick={repairSystem} disabled={role !== "OPERATOR"} className="w-full h-14 rounded-2xl font-black text-[10px] bg-amber-500 text-white border-none hover:bg-amber-600 animate-pulse shadow-lg"><FaWrench className="mr-2" /> REPAIR & RE-ENGAGE</Button>
+                  )}
+                  <Button variant="outline" onClick={downloadReport} disabled={role !== "OPERATOR"} className="w-full h-14 rounded-2xl font-black text-[10px] bg-slate-50 text-slate-600 border-slate-100 hover:bg-slate-900 hover:text-white transition-all shadow-sm"><FaDownload className="mr-2" /> EXTRACT EVIDENCE</Button>
+              </div>
+            </Card>
           </div>
 
+          <div className="lg:col-span-3 space-y-8">
+            <Card className="p-8 bg-white border-2 border-slate-50 rounded-[32px] shadow-sm">
+              <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-8">REAL-TIME LEDGER FEED</h3>
+              <div className="overflow-hidden rounded-2xl border border-slate-100">
+                <Table>
+                  <TableHeader className="bg-slate-50/50">
+                    <TableRow>
+                      <TableHead className="text-[10px] font-black uppercase text-slate-400 py-5 px-6">Entry ID</TableHead>
+                      <TableHead className="text-[10px] font-black uppercase text-slate-400 py-5">Amount</TableHead>
+                      <TableHead className="text-[10px] font-black uppercase text-slate-400 py-5">Reason</TableHead>
+                      <TableHead className="text-right px-6 py-5 text-[10px] font-black uppercase text-slate-400">Integrity</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {data.last10?.map((tx: any, i: number) => (
+                      <TableRow key={i} className="hover:bg-amber-50/20 transition-colors">
+                        <TableCell className="font-mono text-[10px] font-bold text-slate-400 px-6 py-5">#{tx.TransactionID}</TableCell>
+                        <TableCell className="font-black text-slate-900">₹{tx.Amount?.toLocaleString()}</TableCell>
+                        <TableCell className="text-xs font-medium text-slate-500">{tx.Scheme}</TableCell>
+                        <TableCell className="text-right px-6 py-5"><span className="bg-green-50 text-green-600 text-[8px] font-black px-2 py-1 rounded-md border border-green-100 uppercase tracking-widest">CHAINED</span></TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </Card>
+
+            <Card className="p-8 bg-white border-2 border-slate-50 rounded-[32px] shadow-sm">
+              <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-8">
+                <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">CITIZEN REGISTRY</h3>
+                <div className="flex items-center gap-4 w-full md:w-auto">
+                    <div className="relative flex-1 md:w-64">
+                        <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs" />
+                        <input type="text" placeholder="Search Citizen ID..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full h-10 pl-10 pr-4 bg-slate-50 border border-slate-100 rounded-xl text-xs font-bold focus:ring-2 focus:ring-amber-500/20 outline-none" />
+                    </div>
+                    <button onClick={() => setSortDescending(!sortDescending)} className="h-10 px-4 bg-amber-50 border border-amber-100 rounded-xl text-amber-600 flex items-center gap-2 text-[10px] font-black uppercase hover:bg-amber-600 hover:text-white transition-all">
+                      {sortDescending ? <FaSortAmountDown /> : <FaSortAmountUp />} {sortDescending ? "Higher" : "Lower"}
+                    </button>
+                </div>
+              </div>
+              <div className="max-h-[400px] overflow-auto custom-scrollbar pr-2 space-y-4">
+                {data.registry?.filter((u: any) => u.Citizen_ID?.toLowerCase().includes(searchQuery.toLowerCase())).sort((a: any, b: any) => sortDescending ? parseInt(b.Claim_Count) - parseInt(a.Claim_Count) : parseInt(a.Claim_Count) - parseInt(b.Claim_Count)).map((u: any, i: number) => (
+                  <div key={i} className="bg-slate-50/50 p-5 rounded-2xl flex justify-between items-center border border-transparent hover:border-amber-200 hover:bg-white transition-all group">
+                    <div className="flex items-center gap-4">
+                       <div className="w-10 h-10 rounded-full bg-white border border-slate-100 flex items-center justify-center font-black text-[10px] text-slate-400 group-hover:text-amber-600 shadow-sm">{i + 1}</div>
+                       <div>
+                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-0.5">CITIZEN NODE</p>
+                          <p className="text-sm font-black text-slate-900">ID-{u.Citizen_ID}</p>
+                       </div>
+                    </div>
+                    <div className="text-right">
+                       <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-0.5">CLAIMS</p>
+                       <p className="text-sm font-black text-amber-600">{u.Claim_Count}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          </div>
         </div>
 
       </div>
-
     </div>
   );
 }

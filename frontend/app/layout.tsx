@@ -7,14 +7,15 @@ import Navbar from "../components/Navbar";
 import { Geist } from "next/font/google";
 import { cn } from "@/lib/utils";
 
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
+const geist = Geist({ subsets: ['latin'], variable: '--font-sans' });
 
 
 export default function RootLayout({ children }: any) {
   return (
     <html lang="en" className={cn("font-sans", geist.variable)}>
       <head>
-        <title>CivicShield | Secure Welfare Distribution</title>
+        <title>CivicShield</title>
+        <link rel="icon" href="/favicon.jpeg" />
         <meta name="description" content="Blockchain-backed fraud detection and automated welfare approvals." />
       </head>
       <body>
